@@ -17,15 +17,26 @@ public class ATMSimulator {
     Scanner scanner = new Scanner(System.in); 
 
  // User prompted for Auth credentials
-    System.out.print("Welcome Dear Customer. To Proceed, Please Enter Your Username: ");
-    String username = scanner.nextLine();
-
-    System.out.print("Please Enter Your Password For Authentication: ");
-    String password = scanner.nextLine();
-
-
- // Start of If else statement
-    if ( username.equals(DB_USERNAME) && password.equals(DB_PASSWORD)){
+ int loginAttempts = 0;
+ boolean authenticated = false;
+ 
+ while (loginAttempts < 3) {
+     System.out.print("Welcome Dear Customer. To Proceed, Please Enter Your Username: ");
+     String username = scanner.nextLine();
+ 
+     System.out.print("Please Enter Your Password For Authentication: ");
+     String password = scanner.nextLine();
+ 
+     if (username.equals(DB_USERNAME) && password.equals(DB_PASSWORD)) {
+         authenticated = true;
+         break;
+     } else {
+         loginAttempts++;
+         System.out.println("Invalid username or password. Attempts remaining: " + (3 - loginAttempts));
+     }
+ }
+ 
+ if (authenticated) {
 
         boolean quit = false;
 
@@ -65,7 +76,7 @@ public class ATMSimulator {
      //use switch statement to enable the user pick diffent cases of the transactions
         switch (transaction) {
             case "1":
-                System.out.println("Welcome "+ username);
+                System.out.println("Welcome "+ DB_USERNAME);
                 System.out.println("Your balance is Ksh: "+ balance);
                 askToGoBack(scanner);
                 break;
@@ -127,7 +138,7 @@ public class ATMSimulator {
 
     }
     else{
-        System.err.println("You have entered an incorrect Username or Password");
+        System.err.println("You have exhausted your login attempts. Exiting the program.");
     }
 
  //End of If else statement
