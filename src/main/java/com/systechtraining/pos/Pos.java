@@ -55,7 +55,7 @@ public class Pos {
         } else {
             System.err.println("You have exhausted your login attempts. Please try again after a few minutes.");
         }
-
+        scanner.close();
     }
 
     public void login() {
@@ -156,6 +156,7 @@ public class Pos {
 
     public void printReciept() {
         System.out.println("Item Code   Quantity   Unit Price   Total Value");
+        double receiptTotal = 0.0;
 
         for (Item item : items) {
             System.out.printf("%-12d%-11d%-12.2f%-13.2f%n",
@@ -164,17 +165,18 @@ public class Pos {
                     item.getUnitPrice(),
                     (item.getQuantity() * item.getUnitPrice()));
 
-            total += (item.getQuantity() * item.getUnitPrice());
+                    receiptTotal += (item.getQuantity() * item.getUnitPrice()); 
         }
         System.out.println();
         System.out.println("************************************************");
-        System.out.println("Total: " + total);
+        System.out.println("Total: " + receiptTotal);
         System.out.println("************************************************");
-        System.out.println("Payment Amount: "+ paymentAmount);
-        System.out.println("Change: "+ change);
+        System.out.println("Payment Amount: " + paymentAmount);
+        System.out.println("Change: " + change);
         System.out.println("_____");
         System.out.println("************************************************");
         System.out.println("THANK YOU FOR SHOPPING WITH US!");
         System.out.println("************************************************");
     }
+
 }
