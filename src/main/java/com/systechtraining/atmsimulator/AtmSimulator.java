@@ -3,38 +3,23 @@ package com.systechtraining.atmsimulator;
 import java.util.Scanner;
 
 public class AtmSimulator {
+    // constants declarations
+    final static String DB_USERNAME = "Root";
+    final static String DB_PASSWORD = "Admin123";
+
+    // varriable declaration
+    double balance = 1000;
+
+    // Initialize the scanner class for user inputs
+    static Scanner scanner = new Scanner(System.in);
+
+    // User prompted for Auth credentials
+    static int loginAttempts = 0;
+    static boolean authorized = false;
 
     public static void main(String[] args) {
-
-        // constants declarations
-        final String DB_USERNAME = "Root";
-        final String DB_PASSWORD = "Admin123";
-
-        // varriable declaration
-        double balance = 1000;
-
-        // Initialize the scanner class for user inputs
-        Scanner scanner = new Scanner(System.in);
-
-        // User prompted for Auth credentials
-        int loginAttempts = 0;
-        boolean authorized = false;
-
-        while (loginAttempts < 3) {
-            System.out.print("Welcome Dear Customer. To Proceed, Please Enter Your Username: ");
-            String username = scanner.nextLine();
-
-            System.out.print("Please Enter Your Password For Authentication: ");
-            String password = scanner.nextLine();
-
-            if (username.equals(DB_USERNAME) && password.equals(DB_PASSWORD)) {
-                authorized = true;
-                break;
-            } else {
-                loginAttempts++;
-                System.out.println("Invalid username or password. Attempts remaining: " + (3 - loginAttempts));
-            }
-        }
+        AtmSimulator atmSimulator = new AtmSimulator();
+        atmSimulator.login();
 
         if (authorized) {
 
@@ -44,90 +29,34 @@ public class AtmSimulator {
             // without program termination
             while (!quit) {
 
-                // Start of the Main menu
-                System.out.println("***************");
-                System.out.println();
-                System.out.println("ATM SIMULATOR");
-                System.out.println();
-
-                // Use escape character to enable display of ""
-                System.out.println("\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"");
-                System.out.println();
-                System.out.println("ATM SERVICES");
-                System.out.println();
-                System.out.println("_______________");
-                System.out.println();
-                System.out.println("1. Check Balance");
-                System.out.println("2. Deposit");
-                System.out.println("3. Withdrawal");
-                System.out.println("4. Transfer Cash");
-                System.out.println("5. Quit");
-                System.out.println();
-
-                // Use escape character to enable display of ""
-                System.out.println("\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"");
+                atmSimulator.displayMenu();
 
                 System.out.print("Please Choose Your Transaction: ");
                 String transaction = scanner.nextLine();
 
-                // End of the Main menu
 
                 // use switch statement to enable the user pick diffent cases of the
                 // transactions
                 switch (transaction) {
                     case "1":
-                        System.out.println("Welcome " + DB_USERNAME);
-                        System.out.println("Your balance is Ksh: " + balance);
-                        askToGoBack(scanner);
+                        atmSimulator.welcomeMessage();
                         break;
 
                     case "2":
-                        System.out.print("How much would you like to deposit: ");
-                        int depositedAmount = scanner.nextInt();
-                        scanner.nextLine();
-                        balance = balance + depositedAmount;
-                        System.out.println("Deposit is sucessful. Available balance is Ksh: " + balance);
-                        askToGoBack(scanner);
+                        atmSimulator.depositCash();
                         break;
 
                     case "3":
-                        System.out.print("How much would you like to Withdraw: ");
-                        int withdrawalAmount = scanner.nextInt();
-                        scanner.nextLine();
-                        if (withdrawalAmount > balance) {
-                            System.err.println("Failed: Not enough money in your account");
-                            System.err.println("Your Available balance is: " + balance);
-                            askToGoBack(scanner);
-                        } else {
-                            double withdrawalTax = (2.0 / 100) * withdrawalAmount;
-                            balance = (balance - (withdrawalAmount + withdrawalTax));
-                            System.out.println("Withdrawal is successful. Available balance is: " + balance);
-                            askToGoBack(scanner);
-                        }
+                        atmSimulator.withdrawCash();
                         break;
 
                     case "4":
-                        System.out.print("How much would you like to transfer: ");
-                        int transferAmount = scanner.nextInt();
-                        scanner.nextLine();
-                        if (transferAmount > balance) {
-                            System.err.println("Failed: Not enough money in your account");
-                            System.err.println("Your Available balance is: " + balance);
-                            askToGoBack(scanner);
-                        } else {
-                            balance = balance - transferAmount;
-                            System.out.println("Cash transfered  successfully. Available balance is: " + balance);
-                            askToGoBack(scanner);
-                        }
+                        atmSimulator.transferCash();
                         break;
 
                     case "5":
-                        System.out.print("Are you sure you want to exit (Yes/No)? ");
-                        String exitPrompt = scanner.nextLine();
-                        if (exitPrompt.equalsIgnoreCase("Yes")) {
-                            System.out.println("Exiting the program....");
-                            quit = true;
-                        }
+                        atmSimulator.exitSystem();
+                        quit = true;
                         break;
 
                     default:
@@ -144,6 +73,105 @@ public class AtmSimulator {
 
         scanner.close();
 
+    }
+
+    private void login() {
+        while (loginAttempts < 3) {
+            System.out.print("Welcome Dear Customer. To Proceed, Please Enter Your Username: ");
+            String username = scanner.nextLine();
+
+            System.out.print("Please Enter Your Password For Authentication: ");
+            String password = scanner.nextLine();
+
+            if (username.equals(DB_USERNAME) && password.equals(DB_PASSWORD)) {
+                authorized = true;
+                break;
+            } else {
+                loginAttempts++;
+                System.out.println("Invalid username or password. Attempts remaining: " + (3 - loginAttempts));
+            }
+        }
+
+    }
+
+    private void displayMenu() {
+        // Start of the Main menu
+        System.out.println("***************");
+        System.out.println();
+        System.out.println("ATM SIMULATOR");
+        System.out.println();
+
+        // Use escape character to enable display of ""
+        System.out.println("\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"");
+        System.out.println();
+        System.out.println("ATM SERVICES");
+        System.out.println();
+        System.out.println("_______________");
+        System.out.println();
+        System.out.println("1. Check Balance");
+        System.out.println("2. Deposit");
+        System.out.println("3. Withdrawal");
+        System.out.println("4. Transfer Cash");
+        System.out.println("5. Quit");
+        System.out.println();
+
+        // Use escape character to enable display of ""
+        System.out.println("\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"");
+    }
+
+    private void welcomeMessage() {
+        System.out.println("Welcome " + DB_USERNAME);
+        System.out.println("Your balance is Ksh: " + balance);
+        askToGoBack(scanner);
+    }
+
+    private void depositCash() {
+        System.out.print("How much would you like to deposit: ");
+        int depositedAmount = scanner.nextInt();
+        scanner.nextLine();
+        balance = balance + depositedAmount;
+        System.out.println("Deposit is sucessful. Available balance is Ksh: " + balance);
+        askToGoBack(scanner);
+    }
+
+    private void withdrawCash() {
+        System.out.print("How much would you like to Withdraw: ");
+        int withdrawalAmount = scanner.nextInt();
+        scanner.nextLine();
+        if (withdrawalAmount > balance) {
+            System.err.println("Failed: Not enough money in your account");
+            System.err.println("Your Available balance is: " + balance);
+            askToGoBack(scanner);
+        } else {
+            double withdrawalTax = (2.0 / 100) * withdrawalAmount;
+            balance = (balance - (withdrawalAmount + withdrawalTax));
+            System.out.println("Withdrawal is successful. Available balance is: " + balance);
+            askToGoBack(scanner);
+        }
+    }
+
+    private void transferCash() {
+        System.out.print("How much would you like to transfer: ");
+        int transferAmount = scanner.nextInt();
+        scanner.nextLine();
+        if (transferAmount > balance) {
+            System.err.println("Failed: Not enough money in your account");
+            System.err.println("Your Available balance is: " + balance);
+            askToGoBack(scanner);
+        } else {
+            balance = balance - transferAmount;
+            System.out.println("Cash transfered  successfully. Available balance is: " + balance);
+            askToGoBack(scanner);
+        }
+    }
+
+    private void exitSystem() {
+        System.out.print("Are you sure you want to exit (Yes/No)? ");
+        String exitPrompt = scanner.nextLine();
+        if (exitPrompt.equalsIgnoreCase("Yes")) {
+            System.out.println("Exiting the program....");
+
+        }
     }
 
     // Implement this function to enable the user choose if they want to go back to
