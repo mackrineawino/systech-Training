@@ -106,6 +106,8 @@ public class Restaurant {
             foodOption = scanner.nextInt();
             scanner.nextLine();
 
+            quitRestaurant();
+            
             Menu selectedMenuItem;
             if (foodOption <= drinks.size()) {
                 selectedMenuItem = drinks.get(foodOption - 1);
@@ -175,5 +177,12 @@ public class Restaurant {
             totalAmount += item.getPrice();
         }
         return totalAmount;
+    }
+
+    private void quitRestaurant() {
+        if (foodOption == 7) {
+            System.out.println("Thank you for dining with us. Have a great day!");
+            System.exit(0);
+        }
     }
 }
