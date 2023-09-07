@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 public class Pos {
 
-    final String DB_USERNAME = "Root";
     final String DB_PASSWORD = "Admin123";
 
     static boolean authorized = false;
@@ -62,18 +61,15 @@ public class Pos {
         int loginAttempts = 0;
 
         while (loginAttempts < 3) {
-            System.out.print("Welcome Dear Customer. To Proceed, Please Enter Your Username: ");
-            String username = scanner.nextLine();
-
-            System.out.print("Please Enter Your Password For Authentication: ");
+            System.out.print(" Welcome Dear Customer. Please Enter Your Password For Authentication: ");
             String password = scanner.nextLine();
 
-            if (username.equals(DB_USERNAME) && password.equals(DB_PASSWORD)) {
+            if (password.equals(DB_PASSWORD)) {
                 authorized = true;
                 break;
             } else {
                 loginAttempts++;
-                System.out.println("Invalid username or password. Attempts remaining: " + (3 - loginAttempts));
+                System.out.println("Invalid password. Attempts remaining: " + (3 - loginAttempts));
             }
         }
     }
