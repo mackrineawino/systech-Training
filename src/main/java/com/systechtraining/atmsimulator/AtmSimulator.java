@@ -122,7 +122,7 @@ public class AtmSimulator {
     private void welcomeMessage() {
         System.out.println("Welcome " + DB_USERNAME);
         System.out.println("Your balance is Ksh: " + balance);
-        askToGoBack(scanner);
+        askToGoBack();
     }
 
     private void depositCash() {
@@ -131,7 +131,7 @@ public class AtmSimulator {
         scanner.nextLine();
         balance = balance + depositedAmount;
         System.out.println("Deposit is sucessful. Available balance is Ksh: " + balance);
-        askToGoBack(scanner);
+        askToGoBack();
     }
 
     private void withdrawCash() {
@@ -141,12 +141,12 @@ public class AtmSimulator {
         if (withdrawalAmount > balance) {
             System.err.println("Failed: Not enough money in your account");
             System.err.println("Your Available balance is: " + balance);
-            askToGoBack(scanner);
+            askToGoBack();
         } else {
             double withdrawalTax = (2.0 / 100) * withdrawalAmount;
             balance = (balance - (withdrawalAmount + withdrawalTax));
             System.out.println("Withdrawal is successful. Available balance is: " + balance);
-            askToGoBack(scanner);
+            askToGoBack();
         }
     }
 
@@ -157,11 +157,11 @@ public class AtmSimulator {
         if (transferAmount > balance) {
             System.err.println("Failed: Not enough money in your account");
             System.err.println("Your Available balance is: " + balance);
-            askToGoBack(scanner);
+            askToGoBack();
         } else {
             balance = balance - transferAmount;
             System.out.println("Cash transfered  successfully. Available balance is: " + balance);
-            askToGoBack(scanner);
+            askToGoBack();
         }
     }
 
@@ -174,11 +174,7 @@ public class AtmSimulator {
         }
     }
 
-    // Implement this function to enable the user choose if they want to go back to
-    // the main menu or exit: this prevents default navigation to the meinmenu after
-    // eah transcation
-    // Call the function after every trascation
-    private static void askToGoBack(Scanner scanner) {
+    private void askToGoBack() {
         System.out.print("Do you want to go back to the main menu (Yes/No)? ");
         String goBackToMenu = scanner.nextLine();
         if (goBackToMenu.equalsIgnoreCase("No")) {
