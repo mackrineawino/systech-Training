@@ -5,7 +5,7 @@ public class Student {
     private String regNo;
     private String name;
 
-    public Student() {
+    public Student(String studentRegNumber) {
 
     }
 
@@ -44,4 +44,8 @@ public class Student {
         return "Student [id=" + id + ", regNo=" + regNo + ", name=" + name + "]";
     }
     //com.systechafrica.part2.encapsulation.Student@3f0ee7cb
+
+    public String getStudentRegNumber() {
+        return null;
+    }
 }
