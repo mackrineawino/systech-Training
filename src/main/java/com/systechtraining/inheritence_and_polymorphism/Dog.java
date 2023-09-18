@@ -1,4 +1,4 @@
-package com.inheritence_and_polymorphism;
+package com.systechtraining.inheritence_and_polymorphism;
 
 public class Dog extends Animal{
     @Override
