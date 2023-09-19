@@ -126,11 +126,12 @@ public class LibraryMS {
         System.out.println("------------------");
     
         if (books != null && books.length > 0) {
-            for (Book book : books) {
-                if (book.getBorrower() != null) {
-                    System.out.println("Title: " + book.getTitle());
-                    System.out.println("ISBN: " + book.getIsbnNumber());
-                    System.out.println("Borrowed by Student: " + book.getBorrower().getStudentRegNumber());
+            for (Book x : books) {
+                if (x.getBorrower() != null) {
+                    System.out.println("Title: " + x.getTitle());
+                    System.out.println("ISBN: " + x.getIsbnNumber());
+                    
+                    System.out.println("Borrowed by Student: " + x.getBorrower().getStudentRegNumber());
                     System.out.println("------------------");
                 }
             }
