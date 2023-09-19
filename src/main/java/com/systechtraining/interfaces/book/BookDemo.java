@@ -6,5 +6,14 @@ public class BookDemo {
         Book book = new Book("22222", "thendfdhfhs", "dshgfgshdgfs");
         Book createdbook = b1.createBook(book);
         System.out.println(createdbook);
+
+       Book found = b1.findBook(book.getIsbn());
+       System.out.println(found);
+
+       Book update = b1.updateBook(book.getIsbn(), "thh");
+       System.out.println(update);
+
+        b1.deleteBook(book.getIsbn());
+        
     }
 }
