@@ -30,18 +30,19 @@ public class DatabaseAccessDemo {
 
             // 1. Add the jdbc driver to the pom.xml
             // 2. Load the database driver
-            Class.forName("com.postgresql.cj.jdbc.Driver");
+            Class.forName("org.postgresql.Driver");
 
             // 3. Create a connection to the database
             String connectionUrl = "jdbc:postgresql://localhost:5432/javase";
-            String user = "javase";
+            String user = "postgres";
             String password = "javase";
             Connection connection = DriverManager.getConnection(connectionUrl, user, password);
 
             // 4. Create Statement from the connection
             Statement statement = connection.createStatement();
 
-            String createTasksTable = "CREATE TABLE IF NOT EXISTS tasks (task_id INT AUTO_INCREMENT PRIMARY KEY,title VARCHAR(255) NOT NULL,start_date DATE,due_date DATE,status TINYINT NOT NULL,priority TINYINT NOT NULL,description TEXT,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)  ENGINE=INNODB;";
+            String createTasksTable = "CREATE TABLE IF NOT EXISTS tasks (task_id SERIAL PRIMARY KEY, title VARCHAR(255) NOT NULL, start_date DATE, due_date DATE, status SMALLINT NOT NULL, priority SMALLINT NOT NULL, description TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+        
             // Execute queries
 
             int updateStatus = statement.executeUpdate(createTasksTable);
@@ -60,8 +61,10 @@ public class DatabaseAccessDemo {
             // read task details
             Task task = getTaskFromUser(scanner);
             preparedStatement.setString(1, task.getTitle());
-            preparedStatement.setString(2, task.getStartDate().toString());
-            preparedStatement.setString(3, task.getDueDate().toString());
+            
+            preparedStatement.setDate(2, java.sql.Date.valueOf(task.getStartDate()));
+            preparedStatement.setDate(3, java.sql.Date.valueOf(task.getDueDate()));
+            
             preparedStatement.setInt(4, task.getTaskStatus());
             preparedStatement.setInt(5, task.getPriority());
             preparedStatement.setString(6, task.getDescription());
@@ -118,7 +121,7 @@ public class DatabaseAccessDemo {
         System.out.println("Enter task start date(YYYY-MM-DD): ");
         LocalDate startDate = LocalDate.parse(scanner.nextLine());
 
-        System.out.println("Enter task start date(YYYY-MM-DD): ");
+        System.out.println("Enter task due date(YYYY-MM-DD): ");
         LocalDate dueDate = LocalDate.parse(scanner.nextLine());
 
         System.out.println("Enter task task status (0/1): ");
