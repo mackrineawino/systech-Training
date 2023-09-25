@@ -21,11 +21,11 @@ public class Pos {
         pos.login();
 
         if (authorized) {
-            boolean quit = false;
+            boolean keepShowingMenu = true;
 
             // The while loop will enable you go back to the menu after a transcation
             // without program termination
-            while (!quit) {
+            while (keepShowingMenu) {
                 pos.displayMenu();
 
                 System.out.print("Choose an option: ");
@@ -43,6 +43,12 @@ public class Pos {
 
                     case 3:
                         pos.printReciept();
+                        break;
+
+                    case 4:
+                        keepShowingMenu = false;
+                        System.out.println("Exiting the program.");
+                        System.exit(0);
                         break;
 
                     default:
@@ -84,6 +90,7 @@ public class Pos {
         System.out.println("1. ADD ITEM");
         System.out.println("2. MAKE PAYMENT");
         System.out.println("3. DISPLAY RECIEPT");
+        System.out.println("4. QUIT");
         System.out.println();
 
     }
@@ -141,13 +148,18 @@ public class Pos {
         System.out.println("************************************************");
         System.out.print("Enter the amount given by customer: ");
         paymentAmount = scanner.nextInt();
-        change = paymentAmount - total;
+        if (paymentAmount >= total) {
+            change = paymentAmount - total;
 
-        System.out.println("Change: " + change);
-        System.out.println("_____");
-        System.out.println("************************************************");
-        System.out.println("THANK YOU FOR SHOPPING WITH US!");
-        System.out.println("************************************************");
+            System.out.println("Change: " + change);
+            System.out.println("_____");
+            System.out.println("************************************************");
+            System.out.println("THANK YOU FOR SHOPPING WITH US!");
+            System.out.println("************************************************");
+        } else {
+            System.out.println("Insufficient Funds!");
+        }
+
     }
 
     public void printReciept() {
@@ -161,7 +173,7 @@ public class Pos {
                     item.getUnitPrice(),
                     (item.getQuantity() * item.getUnitPrice()));
 
-                    receiptTotal += (item.getQuantity() * item.getUnitPrice()); 
+            receiptTotal += (item.getQuantity() * item.getUnitPrice());
         }
         System.out.println();
         System.out.println("************************************************");
