@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -58,41 +59,47 @@ public class Pos {
             LOGGER.severe("Unable to obtain read/write permissions for the log file: " + e.getMessage());
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure: " + e.getMessage());
+        } catch (CustomException e) {
+            LOGGER.severe(e.getMessage());
         }
 
     }
 
-    public void controlStatement() {
+   public void controlStatement() throws CustomException {
+    try {
+        System.out.println("Please choose an option: ");
+        if (scanner.hasNextInt()) {
+            option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    addItems();
+                    break;
 
-        System.out.println("Please chose an option: ");
-        option = scanner.nextInt();
-        switch (option) {
-            case 1:
-                addItems();
+                case 2:
+                    makePayment();
+                    break;
 
-                break;
+                case 3:
+                    printReciept();
+                    break;
 
-            case 2:
-                makePayment();
+                case 4:
+                    keepShowingMenu = false;
+                    LOGGER.warning("Exiting the program\n");
+                    System.exit(0);
+                    break;
 
-                break;
-
-            case 3:
-                printReciept();
-                break;
-
-            case 4:
-                keepShowingMenu = false;
-                LOGGER.warning("Exiting the program\n");
-                System.exit(0);
-                break;
-
-            default:
-                LOGGER.severe("Please enter a valid option\n");
-                break;
+                default:
+                    LOGGER.severe("Please enter a valid option\n");
+                    break;
+            }
+        } else {
+            throw new CustomException("Input integers only");
         }
-
+    } catch (InputMismatchException e) {
+        throw new CustomException("Input integers only");
     }
+}
 
     public void dbConnection() {
         try {
