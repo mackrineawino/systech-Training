@@ -11,8 +11,6 @@ import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import com.systechtraining.exception_handling.MyCustomException;
-
 public class Pos {
     private static final Logger LOGGER = Logger.getLogger(Pos.class.getName());
     static Scanner scanner = new Scanner(System.in);
@@ -60,43 +58,39 @@ public class Pos {
             LOGGER.severe("Unable to obtain read/write permissions for the log file: " + e.getMessage());
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure: " + e.getMessage());
-        } catch (CustomException e) {
-           LOGGER.severe( e.getMessage());
         }
 
     }
 
-    public void controlStatement()  throws CustomException{
-     
-            System.out.println("Please chose an option: ");
-            option = scanner.nextInt();
-            switch (option) {
-                case 1:
-                    addItems();
+    public void controlStatement() {
 
-                    break;
+        System.out.println("Please chose an option: ");
+        option = scanner.nextInt();
+        switch (option) {
+            case 1:
+                addItems();
 
-                case 2:
-                    makePayment();
+                break;
 
-                    break;
+            case 2:
+                makePayment();
 
-                case 3:
-                    printReciept();
-                    break;
+                break;
 
-                case 4:
-                    keepShowingMenu = false;
-                    LOGGER.warning("Exiting the program\n");
-                    System.exit(0);
-                    break;
+            case 3:
+                printReciept();
+                break;
 
-                default:
-                    LOGGER.severe("Please enter a valid option\n");
-                    break;
-            }
-          throw new CustomException("Input integers only");
-        
+            case 4:
+                keepShowingMenu = false;
+                LOGGER.warning("Exiting the program\n");
+                System.exit(0);
+                break;
+
+            default:
+                LOGGER.severe("Please enter a valid option\n");
+                break;
+        }
 
     }
 
@@ -301,18 +295,31 @@ public class Pos {
 
                 receiptTotal += itemTotal;
             }
-            double change = paymentAmount - receiptTotal;
+            if (paymentAmount >= receiptTotal) {
+                double change = paymentAmount - receiptTotal;
 
-            System.out.println();
-            System.out.println("************************************************");
-            System.out.println("Total: " + receiptTotal);
-            System.out.println("************************************************");
-            System.out.println("Payment Amount: " + paymentAmount);
-            System.out.println("Change: " + change);
-            System.out.println("_____");
-            System.out.println("************************************************");
-            System.out.println("THANK YOU FOR SHOPPING WITH US!");
-            System.out.println("************************************************");
+                System.out.println();
+                System.out.println("************************************************");
+                System.out.println("Total: " + receiptTotal);
+                System.out.println("************************************************");
+                System.out.println("Payment Amount: " + paymentAmount);
+                System.out.println("Change: " + change);
+                System.out.println("_____");
+                System.out.println("************************************************");
+                System.out.println("THANK YOU FOR SHOPPING WITH US!");
+                System.out.println("************************************************");
+            }
+
+            else {
+                System.out.println();
+                System.out.println("************************************************");
+                System.out.println("Total: " + receiptTotal);
+                System.out.println("************************************************");
+                System.out.println("Payment Amount: " + paymentAmount);
+                LOGGER.severe("No change: Insufficient Funds provided!\n");
+
+            }
+
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure:\n " + e.getMessage());
         }
