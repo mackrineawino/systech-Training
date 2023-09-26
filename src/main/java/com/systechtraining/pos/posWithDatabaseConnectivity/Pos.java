@@ -65,46 +65,47 @@ public class Pos {
 
     }
 
-   public void controlStatement() throws CustomException {
-    try {
-        System.out.println("Please choose an option: ");
-        if (scanner.hasNextInt()) {
-            option = scanner.nextInt();
-            switch (option) {
-                case 1:
-                    addItems();
-                    break;
+    public void controlStatement() throws CustomException {
+        try {
+            System.out.println("Please choose an option: ");
+            if (scanner.hasNextInt()) {
+                option = scanner.nextInt();
+                switch (option) {
+                    case 1:
+                        addItems();
+                        break;
 
-                case 2:
-                    makePayment();
-                    break;
+                    case 2:
+                        makePayment();
+                        break;
 
-                case 3:
-                    printReciept();
-                    break;
+                    case 3:
+                        printReciept();
+                        break;
 
-                case 4:
-                    keepShowingMenu = false;
-                    LOGGER.warning("Exiting the program\n");
-                    System.exit(0);
-                    break;
+                    case 4:
+                        keepShowingMenu = false;
+                        LOGGER.warning("Exiting the program\n");
+                        System.exit(0);
+                        break;
 
-                default:
-                    LOGGER.severe("Please enter a valid option\n");
-                    break;
+                    default:
+                        LOGGER.severe("Please enter a valid option\n");
+                        break;
+                }
+            } else {
+                throw new CustomException("Input integer options only");
             }
-        } else {
+        } catch (InputMismatchException e) {
             throw new CustomException("Input integer options only");
         }
-    } catch (InputMismatchException e) {
-        throw new CustomException("Input integer options only");
     }
-}
 
     public void dbConnection() {
         try {
             Class.forName("org.postgresql.Driver");
-
+            // Swap credetials for String user = "javase"; String password = "javase"; to
+            // run in docker compose
             String connectionUrl = "jdbc:postgresql://localhost:5432/javase";
             String user = "test1";
             String password = "test1";
