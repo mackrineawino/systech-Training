@@ -94,10 +94,10 @@ public class Pos {
                     break;
             }
         } else {
-            throw new CustomException("Input integers only");
+            throw new CustomException("Input integer options only");
         }
     } catch (InputMismatchException e) {
-        throw new CustomException("Input integers only");
+        throw new CustomException("Input integer options only");
     }
 }
 
