@@ -84,7 +84,7 @@ public class Pos {
                         break;
 
                     case 4:
-                     exitSystem();
+                        exitSystem();
                         break;
 
                     default:
@@ -204,9 +204,9 @@ public class Pos {
 
                     }
 
-                }else{
+                } else {
                     LOGGER.severe("Item code, Quantity, Unit Price cannot be negative integers. Please try again");
-                    
+
                 }
 
             }
@@ -335,9 +335,17 @@ public class Pos {
             LOGGER.severe("Database operation failure:\n " + e.getMessage());
         }
     }
- public void exitSystem(){
-    keepShowingMenu = false;
-    LOGGER.warning("Exiting the program\n");
-    System.exit(0);
- }
+
+    public void exitSystem() {
+
+        try {
+            keepShowingMenu = false;
+            String deleteQuery = "DROP TABLE items;";
+            statement.executeUpdate(deleteQuery);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        LOGGER.warning("Exiting the program.....\n");
+        System.exit(0);
+    }
 }
