@@ -30,7 +30,7 @@ public class Pos {
         FileHandler fileHandler;
         try {
             Pos pos = new Pos();
-            fileHandler = new FileHandler("pos_Logging.txt");
+            fileHandler = new FileHandler("pos_Logging.txt", true);
             CustomFormatter formatter = new CustomFormatter();
             LOGGER.addHandler(fileHandler);
             fileHandler.setFormatter(formatter);
@@ -45,7 +45,7 @@ public class Pos {
                 }
 
             } else {
-                LOGGER.severe("You have exhausted your login attempts. Please try again after a few minutes.");
+                LOGGER.severe("You have exhausted your login attempts. Please try again after a few minutes.\n");
             }
             scanner.close();
             resultSet.close();
@@ -117,9 +117,9 @@ public class Pos {
             statement.executeUpdate(createAuthTable);
 
         } catch (ClassNotFoundException e) {
-            LOGGER.severe("Unable to obtain class for jdbc driver: " + e.getMessage());
+            LOGGER.severe("Unable to obtain class for jdbc driver:\n " + e.getMessage());
         } catch (SQLException e) {
-            LOGGER.severe("Database operation failure: " + e.getMessage());
+            LOGGER.severe("Database operation failure:\n " + e.getMessage());
         }
 
     }
@@ -193,6 +193,7 @@ public class Pos {
                     preparedStatement.setInt(2, item.getQuantity());
                     preparedStatement.setDouble(3, item.getUnitPrice());
                     preparedStatement.executeUpdate();
+                    LOGGER.info("Item added successfully");
                     System.out.println("Do you want to add another item? Y/N: ");
 
                     String addMoreItems = scanner.nextLine();
@@ -205,7 +206,7 @@ public class Pos {
                     }
 
                 } else {
-                    LOGGER.severe("Item code, Quantity, Unit Price cannot be negative integers. Please try again");
+                    LOGGER.severe("Item code, Quantity, Unit Price cannot be negative integers. Please try again\n");
 
                 }
 
@@ -260,10 +261,9 @@ public class Pos {
                     System.out.println("************************************************");
                 } else {
                     LOGGER.severe("Insufficient Funds!\n");
-                    displayMenu();
                 }
             } else {
-                LOGGER.warning("Add items to the cart first");
+                LOGGER.warning("Add items to the cart first\n");
                 displayMenu();
             }
 
@@ -283,54 +283,54 @@ public class Pos {
 
             // Check if there are records in the result set
             if (!resultSet.isBeforeFirst()) {
-                LOGGER.warning("Cart is empty...Please add items:");
-                displayMenu(); // Exit the method if there are no records
+                LOGGER.warning("Cart is empty...Please add items:\n");
+               
+            } else {
+
+                System.out.println("Item Code   Quantity   Unit Price   Total Value");
+                double receiptTotal = 0.0;
+
+                while (resultSet.next()) {
+                    int itemCode = resultSet.getInt("itemCode");
+                    int quantity = resultSet.getInt("quantity");
+                    double unitPrice = resultSet.getDouble("unitPrice");
+
+                    Item fetchedItem = new Item(itemCode, quantity, unitPrice);
+                    double itemTotal = quantity * unitPrice;
+
+                    System.out.printf("%-12d%-11d%-12.2f%-13.2f%n",
+                            fetchedItem.getItemCode(),
+                            fetchedItem.getQuantity(),
+                            fetchedItem.getUnitPrice(),
+                            itemTotal);
+
+                    receiptTotal += itemTotal;
+                }
+                if (paymentAmount >= receiptTotal) {
+                    double change = paymentAmount - receiptTotal;
+
+                    System.out.println();
+                    System.out.println("************************************************");
+                    System.out.println("Total: " + receiptTotal);
+                    System.out.println("************************************************");
+                    System.out.println("Payment Amount: " + paymentAmount);
+                    System.out.println("Change: " + change);
+                    System.out.println("_____");
+                    System.out.println("************************************************");
+                    System.out.println("THANK YOU FOR SHOPPING WITH US!");
+                    System.out.println("************************************************");
+                }
+
+                else {
+                    System.out.println();
+                    System.out.println("************************************************");
+                    System.out.println("Total: " + receiptTotal);
+                    System.out.println("************************************************");
+                    System.out.println("Payment Amount: " + paymentAmount);
+                    LOGGER.severe("No change: Insufficient Funds provided!\n");
+
+                }
             }
-
-            System.out.println("Item Code   Quantity   Unit Price   Total Value");
-            double receiptTotal = 0.0;
-
-            while (resultSet.next()) {
-                int itemCode = resultSet.getInt("itemCode");
-                int quantity = resultSet.getInt("quantity");
-                double unitPrice = resultSet.getDouble("unitPrice");
-
-                Item fetchedItem = new Item(itemCode, quantity, unitPrice);
-                double itemTotal = quantity * unitPrice;
-
-                System.out.printf("%-12d%-11d%-12.2f%-13.2f%n",
-                        fetchedItem.getItemCode(),
-                        fetchedItem.getQuantity(),
-                        fetchedItem.getUnitPrice(),
-                        itemTotal);
-
-                receiptTotal += itemTotal;
-            }
-            if (paymentAmount >= receiptTotal) {
-                double change = paymentAmount - receiptTotal;
-
-                System.out.println();
-                System.out.println("************************************************");
-                System.out.println("Total: " + receiptTotal);
-                System.out.println("************************************************");
-                System.out.println("Payment Amount: " + paymentAmount);
-                System.out.println("Change: " + change);
-                System.out.println("_____");
-                System.out.println("************************************************");
-                System.out.println("THANK YOU FOR SHOPPING WITH US!");
-                System.out.println("************************************************");
-            }
-
-            else {
-                System.out.println();
-                System.out.println("************************************************");
-                System.out.println("Total: " + receiptTotal);
-                System.out.println("************************************************");
-                System.out.println("Payment Amount: " + paymentAmount);
-                LOGGER.severe("No change: Insufficient Funds provided!\n");
-
-            }
-
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure:\n " + e.getMessage());
         }
