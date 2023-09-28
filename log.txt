@@ -1,6 +1,0 @@
-2023-09-25 13:36:47 | main | INFO | Info message logging
-2023-09-25 13:36:47 | main | SEVERE | Error message logging
-2023-09-25 13:36:47 | main | WARNING | Warning message logging
-2023-09-25 13:36:47 | test | INFO | Info message logging test
-2023-09-25 13:36:47 | test | SEVERE | Error message logging test
-2023-09-25 13:36:47 | test | WARNING | Warning message logging test
