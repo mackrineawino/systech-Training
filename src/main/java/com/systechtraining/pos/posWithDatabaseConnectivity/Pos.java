@@ -84,9 +84,7 @@ public class Pos {
                         break;
 
                     case 4:
-                        keepShowingMenu = false;
-                        LOGGER.warning("Exiting the program\n");
-                        System.exit(0);
+                     exitSystem();
                         break;
 
                     default:
@@ -188,22 +186,27 @@ public class Pos {
                 System.out.print("Enter the unit price: ");
                 double unitPrice = scanner.nextDouble();
                 scanner.nextLine();
+                if (quantity > 0 && itemCode > 0 && unitPrice > 0) {
+                    Item item = new Item(itemCode, quantity, unitPrice);
 
-                Item item = new Item(itemCode, quantity, unitPrice);
+                    preparedStatement.setInt(1, item.getItemCode());
+                    preparedStatement.setInt(2, item.getQuantity());
+                    preparedStatement.setDouble(3, item.getUnitPrice());
+                    preparedStatement.executeUpdate();
+                    System.out.println("Do you want to add another item? Y/N: ");
 
-                preparedStatement.setInt(1, item.getItemCode());
-                preparedStatement.setInt(2, item.getQuantity());
-                preparedStatement.setDouble(3, item.getUnitPrice());
-                preparedStatement.executeUpdate();
-                System.out.println("Do you want to add another item? Y/N: ");
+                    String addMoreItems = scanner.nextLine();
 
-                String addMoreItems = scanner.nextLine();
+                    if (addMoreItems.equalsIgnoreCase("Y")) {
+                        System.out.println("Proceed");
+                    } else {
+                        addMore = false;
 
-                if (addMoreItems.equalsIgnoreCase("Y")) {
-                    System.out.println("Proceed");
-                } else {
-                    addMore = false;
+                    }
 
+                }else{
+                    LOGGER.severe("Item code, Quantity, Unit Price cannot be negative integers. Please try again");
+                    
                 }
 
             }
@@ -332,5 +335,9 @@ public class Pos {
             LOGGER.severe("Database operation failure:\n " + e.getMessage());
         }
     }
-
+ public void exitSystem(){
+    keepShowingMenu = false;
+    LOGGER.warning("Exiting the program\n");
+    System.exit(0);
+ }
 }
