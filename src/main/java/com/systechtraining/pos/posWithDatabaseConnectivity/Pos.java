@@ -193,7 +193,7 @@ public class Pos {
                     preparedStatement.setInt(2, item.getQuantity());
                     preparedStatement.setDouble(3, item.getUnitPrice());
                     preparedStatement.executeUpdate();
-                    LOGGER.info("Item added successfully");
+                    LOGGER.info("Item added successfully\n");
                     System.out.println("Do you want to add another item? Y/N: ");
 
                     String addMoreItems = scanner.nextLine();
