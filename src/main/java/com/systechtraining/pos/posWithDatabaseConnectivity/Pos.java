@@ -39,7 +39,6 @@ public class Pos {
             if (authorized) {
 
                 while (keepShowingMenu) {
-                    LOGGER.info("Logged In sucessfully...");
                     pos.displayMenu();
                     pos.controlStatement();
 
@@ -60,8 +59,6 @@ public class Pos {
             LOGGER.severe("Unable to obtain read/write permissions for the log file: " + e.getMessage());
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure: " + e.getMessage());
-        } catch (CustomException e) {
-            LOGGER.severe(e.getMessage());
         }
 
     }
@@ -151,6 +148,7 @@ public class Pos {
                     String storedPassword = resultSet.getString("password");
 
                     if (userPassword.equals(storedPassword)) {
+                        LOGGER.info("Logged in successfully...");
                         authorized = true;
                         break;
                     } else {
@@ -190,11 +188,12 @@ public class Pos {
         System.out.println();
     }
 
-    public void controlStatement() throws CustomException {
+    public void controlStatement() {
         try {
             System.out.println("Please choose an option: ");
             if (scanner.hasNextInt()) {
                 option = scanner.nextInt();
+                scanner.nextLine();
                 switch (option) {
                     case 1:
                         addItems();
@@ -216,9 +215,13 @@ public class Pos {
                         LOGGER.severe("Please enter a valid option\n");
                         break;
                 }
+            } else {
+                
+                scanner.nextLine();
+                LOGGER.severe("Please Input integer options only\n");
             }
         } catch (InputMismatchException e) {
-            throw new CustomException("Input integer options only\n");
+          LOGGER.severe("Input integer options only\n");
         }
     }
 
@@ -275,50 +278,53 @@ public class Pos {
             String selectQuery = "SELECT * from items;";
 
             resultSet = statement.executeQuery(selectQuery);
-            if (resultSet != null) {
-                double total = 0; // Initialize total outside the loop
-                System.out.println("Item Code   Quantity   Unit Price   Total Value");
+            if (!resultSet.isBeforeFirst()) {
+                LOGGER.warning("Cart is empty...Please add items\n");
 
-                while (resultSet.next()) {
-                    int itemCode = resultSet.getInt("itemCode");
-                    int quantity = resultSet.getInt("quantity");
-                    double unitPrice = resultSet.getDouble("unitPrice");
-
-                    // map to object
-                    fetchedItem = new Item(itemCode, quantity, unitPrice);
-                    double itemTotal = quantity * unitPrice;
-
-                    // Accumulate the total for all items
-                    total += itemTotal;
-
-                    System.out.printf("%-12d%-11d%-12.2f%-13.2f%n", fetchedItem.getItemCode(),
-                            fetchedItem.getQuantity(), fetchedItem.getUnitPrice(), itemTotal);
-                }
-
-                System.out.println();
-                System.out.println("************************************************");
-                System.out.println("Total: " + total);
-                System.out.println("************************************************");
-
-                System.out.print("Enter the amount given by customer: ");
-                paymentAmount = scanner.nextInt();
-                if (paymentAmount >= total) {
-
-                    double change = paymentAmount - total;
-
-                    System.out.println("Change: " + change);
-                    System.out.println("_____");
-                    System.out.println("************************************************");
-                    System.out.println("THANK YOU FOR SHOPPING WITH US!");
-                    System.out.println("************************************************");
-                } else {
-                    LOGGER.severe("Insufficient Funds!\n");
-                }
             } else {
-                LOGGER.warning("Add items to the cart first\n");
-                displayMenu();
-            }
+                if (resultSet != null) {
+                    double total = 0; // Initialize total outside the loop
+                    System.out.println("Item Code   Quantity   Unit Price   Total Value");
 
+                    while (resultSet.next()) {
+                        int itemCode = resultSet.getInt("itemCode");
+                        int quantity = resultSet.getInt("quantity");
+                        double unitPrice = resultSet.getDouble("unitPrice");
+
+                        // map to object
+                        fetchedItem = new Item(itemCode, quantity, unitPrice);
+                        double itemTotal = quantity * unitPrice;
+
+                        // Accumulate the total for all items
+                        total += itemTotal;
+
+                        System.out.printf("%-12d%-11d%-12.2f%-13.2f%n", fetchedItem.getItemCode(),
+                                fetchedItem.getQuantity(), fetchedItem.getUnitPrice(), itemTotal);
+                    }
+
+                    System.out.println();
+                    System.out.println("************************************************");
+                    System.out.println("Total: " + total);
+                    System.out.println("************************************************");
+
+                    System.out.print("Enter the amount given by customer: ");
+                    paymentAmount = scanner.nextInt();
+                    if (paymentAmount >= total) {
+
+                        double change = paymentAmount - total;
+
+                        System.out.println("Change: " + change);
+                        System.out.println("_____");
+                        System.out.println("************************************************");
+                        System.out.println("THANK YOU FOR SHOPPING WITH US!");
+                        System.out.println("************************************************");
+                    } else {
+                        LOGGER.severe("Insufficient Funds!\n");
+                    }
+                } else {
+                    LOGGER.warning("Add items to the cart first\n");
+                }
+            }
         } catch (ArithmeticException e) {
             LOGGER.severe(e.getMessage());
         } catch (SQLException e) {
@@ -335,7 +341,7 @@ public class Pos {
 
             // Check if there are records in the result set
             if (!resultSet.isBeforeFirst()) {
-                LOGGER.warning("Cart is empty...Please add items:\n");
+                LOGGER.warning("Cart is empty...Please add items\n");
 
             } else {
 
