@@ -106,7 +106,7 @@ public class Pos {
 
                 if ((username != null) && (password != null)) {
                     User user = new User(username, password);
-                    
+
                     preparedStatement.setString(1, user.getUsername());
                     preparedStatement.setString(2, user.getPassword());
 
@@ -134,7 +134,8 @@ public class Pos {
             String selectQuery = "SELECT * from auth WHERE username = ?";
             preparedStatement = connection.prepareStatement(selectQuery);
 
-            System.out.print("Welcome Dear Customer. Please enter your username: ");
+            System.out.println("Welcome Dear Customer. Logging in ...: ");
+            System.out.print("Please enter your username: ");
             String username = scanner.nextLine();
 
             preparedStatement.setString(1, username);
