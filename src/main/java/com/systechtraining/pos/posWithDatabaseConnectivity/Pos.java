@@ -35,10 +35,11 @@ public class Pos {
             LOGGER.addHandler(fileHandler);
             fileHandler.setFormatter(formatter);
             pos.dbConnection();
-            pos.login();
+            pos.signUp();
             if (authorized) {
 
                 while (keepShowingMenu) {
+                    LOGGER.info("Logged In sucessfully...");
                     pos.displayMenu();
                     pos.controlStatement();
 
@@ -63,6 +64,129 @@ public class Pos {
             LOGGER.severe(e.getMessage());
         }
 
+    }
+
+    public void dbConnection() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            // Swap credetials for String user = "javase"; String password = "javase"; to
+            // run in docker compose
+            String connectionUrl = "jdbc:postgresql://localhost:5432/javase";
+            String user = "test1";
+            String password = "test1";
+            connection = DriverManager.getConnection(connectionUrl, user, password);
+
+            statement = connection.createStatement();
+            String createItemsTable = "CREATE TABLE IF NOT EXISTS items (itemCode VARCHAR(255) PRIMARY KEY, quantity INT NOT NULL, unitPrice DOUBLE PRECISION NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+            statement.executeUpdate(createItemsTable);
+
+            String createAuthTable = "CREATE TABLE IF NOT EXISTS auth (user_id SERIAL PRIMARY KEY, username VARCHAR(255) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+            statement.executeUpdate(createAuthTable);
+
+        } catch (ClassNotFoundException e) {
+            LOGGER.severe("Unable to obtain class for jdbc driver:\n " + e.getMessage());
+        } catch (SQLException e) {
+            LOGGER.severe("Database operation failure:\n " + e.getMessage());
+        }
+
+    }
+
+    public void signUp() {
+
+        try {
+            String insertQuery = "insert into auth (username, password)values(?,?);";
+            preparedStatement = connection.prepareStatement(insertQuery);
+            System.out.print("Welcome, Don't you have an existing account? Please SignUp, (Y/N): ");
+            String signUpOption = scanner.nextLine();
+            if (signUpOption.equalsIgnoreCase("Y")) {
+                System.out.print("Please enter your username: ");
+                String username = scanner.nextLine();
+                System.out.print("Enter your password: ");
+                String password = scanner.nextLine();
+
+                if ((username != null) && (password != null)) {
+                    User user = new User(username, password);
+                    
+                    preparedStatement.setString(1, user.getUsername());
+                    preparedStatement.setString(2, user.getPassword());
+
+                    preparedStatement.executeUpdate();
+                    LOGGER.info("User added successfully\n");
+                    LOGGER.info("Proceeding to login....");
+                    login();
+                } else {
+                    LOGGER.info("Username and password cannot be empty.");
+                }
+
+            } else {
+                login();
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Database operation failure:\n " + e.getMessage());
+        } catch (NullPointerException e) {
+            LOGGER.info("Username and password cannot be empty.");
+        }
+    }
+
+    public void login() {
+        try {
+            int loginAttempts = 0;
+            String selectQuery = "SELECT * from auth WHERE username = ?";
+            preparedStatement = connection.prepareStatement(selectQuery);
+
+            System.out.print("Welcome Dear Customer. Please enter your username: ");
+            String username = scanner.nextLine();
+
+            preparedStatement.setString(1, username);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                while (loginAttempts < 3) {
+
+                    System.out.print("Please Enter Your Password For Authentication: ");
+                    String userPassword = scanner.nextLine();
+
+                    String storedPassword = resultSet.getString("password");
+
+                    if (userPassword.equals(storedPassword)) {
+                        authorized = true;
+                        break;
+                    } else {
+
+                        loginAttempts++;
+                        LOGGER.severe("Invalid password. Attempts remaining:\n " + (3 - loginAttempts));
+                    }
+                }
+
+            } else {
+                System.out.print("User not found. Would you like to Sign Up (Y/N): ");
+                String signUpOption = scanner.nextLine();
+                if (signUpOption.equalsIgnoreCase("Y")) {
+                    signUp();
+                } else {
+                    exitSystem();
+                }
+
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Database operation failure:\n " + e.getMessage());
+        }
+
+    }
+
+    public void displayMenu() {
+        System.out.println("---------------");
+        System.out.println();
+        System.out.println("SYSTECH POS SYSTEM");
+        System.out.println();
+        System.out.println("---------------");
+        System.out.println();
+        System.out.println("1. ADD ITEM");
+        System.out.println("2. MAKE PAYMENT");
+        System.out.println("3. DISPLAY RECIEPT");
+        System.out.println("4. QUIT");
+        System.out.println();
     }
 
     public void controlStatement() throws CustomException {
@@ -91,83 +215,10 @@ public class Pos {
                         LOGGER.severe("Please enter a valid option\n");
                         break;
                 }
-            } else {
-                throw new CustomException("Input integer options only");
             }
         } catch (InputMismatchException e) {
-            throw new CustomException("Input integer options only");
+            throw new CustomException("Input integer options only\n");
         }
-    }
-
-    public void dbConnection() {
-        try {
-            Class.forName("org.postgresql.Driver");
-            // Swap credetials for String user = "javase"; String password = "javase"; to
-            // run in docker compose
-            String connectionUrl = "jdbc:postgresql://localhost:5432/javase";
-            String user = "test1";
-            String password = "test1";
-            connection = DriverManager.getConnection(connectionUrl, user, password);
-
-            statement = connection.createStatement();
-            String createItemsTable = "CREATE TABLE IF NOT EXISTS items (itemCode VARCHAR(255) PRIMARY KEY, quantity INT, unitPrice DOUBLE PRECISION, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-            statement.executeUpdate(createItemsTable);
-
-            String createAuthTable = "CREATE TABLE IF NOT EXISTS auth (user_id SERIAL PRIMARY KEY, userName VARCHAR(255), password VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-            statement.executeUpdate(createAuthTable);
-
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe("Unable to obtain class for jdbc driver:\n " + e.getMessage());
-        } catch (SQLException e) {
-            LOGGER.severe("Database operation failure:\n " + e.getMessage());
-        }
-
-    }
-
-    public void login() {
-        try {
-
-            String selectQuery = "SELECT * from auth;";
-
-            resultSet = statement.executeQuery(selectQuery);
-            int loginAttempts = 0;
-            while (resultSet.next()) {
-                while (loginAttempts < 3) {
-
-                    System.out.print(" Welcome Dear Customer. Please Enter Your Password For Authentication: ");
-                    String userPassword = scanner.nextLine();
-
-                    String storedPassword = resultSet.getString("password");
-
-                    if (userPassword.equals(storedPassword)) {
-                        authorized = true;
-                        break;
-                    } else {
-
-                        loginAttempts++;
-                        LOGGER.severe("Invalid password. Attempts remaining:\n " + (3 - loginAttempts));
-                    }
-                }
-
-            }
-        } catch (SQLException e) {
-            LOGGER.severe("Database operation failure:\n " + e.getMessage());
-        }
-
-    }
-
-    public void displayMenu() {
-        System.out.println("---------------");
-        System.out.println();
-        System.out.println("SYSTECH POS SYSTEM");
-        System.out.println();
-        System.out.println("---------------");
-        System.out.println();
-        System.out.println("1. ADD ITEM");
-        System.out.println("2. MAKE PAYMENT");
-        System.out.println("3. DISPLAY RECIEPT");
-        System.out.println("4. QUIT");
-        System.out.println();
     }
 
     public void addItems() {
@@ -194,8 +245,8 @@ public class Pos {
                     preparedStatement.setDouble(3, item.getUnitPrice());
                     preparedStatement.executeUpdate();
                     LOGGER.info("Item added successfully\n");
-                    System.out.println("Do you want to add another item? Y/N: ");
 
+                    System.out.println("Do you want to add another item? Y/N: ");
                     String addMoreItems = scanner.nextLine();
 
                     if (addMoreItems.equalsIgnoreCase("Y")) {
@@ -284,7 +335,7 @@ public class Pos {
             // Check if there are records in the result set
             if (!resultSet.isBeforeFirst()) {
                 LOGGER.warning("Cart is empty...Please add items:\n");
-               
+
             } else {
 
                 System.out.println("Item Code   Quantity   Unit Price   Total Value");

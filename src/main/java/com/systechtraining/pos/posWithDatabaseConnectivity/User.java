@@ -2,12 +2,13 @@ package com.systechtraining.pos.posWithDatabaseConnectivity;
 
 public class User {
     int id;
-    private String userName;
+    private String username;
     private String password;
     
     public User() {
     }
-    public User(String password) {
+    public User(String username, String password) {
+        this.username = username;
         this.password = password;
     }
     public int getId() {
@@ -16,11 +17,11 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
     public String getPassword() {
         return password;
@@ -28,5 +29,5 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
 }
