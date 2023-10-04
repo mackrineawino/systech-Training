@@ -59,6 +59,8 @@ public class Pos {
             LOGGER.severe("Unable to obtain read/write permissions for the log file: " + e.getMessage());
         } catch (SQLException e) {
             LOGGER.severe("Database operation failure: " + e.getMessage());
+        } catch (CustomException e) {
+            LOGGER.severe("Please Input integer options only\n");
         }
 
     }
@@ -188,41 +190,39 @@ public class Pos {
         System.out.println();
     }
 
-    public void controlStatement() {
-        try {
-            System.out.println("Please choose an option: ");
-            if (scanner.hasNextInt()) {
-                option = scanner.nextInt();
-                scanner.nextLine();
-                switch (option) {
-                    case 1:
-                        addItems();
-                        break;
+    public void controlStatement() throws CustomException {
 
-                    case 2:
-                        makePayment();
-                        break;
+        System.out.println("Please choose an option: ");
+        if (scanner.hasNextInt()) {
+            option = scanner.nextInt();
+            scanner.nextLine();
+            switch (option) {
+                case 1:
+                    addItems();
+                    break;
 
-                    case 3:
-                        printReciept();
-                        break;
+                case 2:
+                    makePayment();
+                    break;
 
-                    case 4:
-                        exitSystem();
-                        break;
+                case 3:
+                    printReciept();
+                    break;
 
-                    default:
-                        LOGGER.severe("Please enter a valid option\n");
-                        break;
-                }
-            } else {
-                
-                scanner.nextLine();
-                LOGGER.severe("Please Input integer options only\n");
+                case 4:
+                    exitSystem();
+                    break;
+
+                default:
+                    LOGGER.severe("Please enter a valid option\n");
+                    break;
             }
-        } catch (InputMismatchException e) {
-          LOGGER.severe("Input integer options only\n");
+        } else {
+
+            scanner.nextLine();
+            throw new CustomException("Please Input integer options only\n");
         }
+
     }
 
     public void addItems() {
