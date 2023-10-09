@@ -51,7 +51,7 @@ public class Lambda {
         };
 
         Student student = new Student(1, "Tony", "tony@gmail.com", "001");
-        Student student2 = new Student(2, "tony", "mackrine@gmail.com", "002");
+        Student student2 = new Student(2, "mackrine", "mackrine@gmail.com", "002");
 
         report.generateReport(student);
         report2.generateReport(student2);
